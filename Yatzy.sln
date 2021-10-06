@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yatzy", "Yatzy\Yatzy.csproj", "{9F50D9FA-7512-4B19-B929-D895F38BD86D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YatzyTests", "YatzyTests\YatzyTests.csproj", "{6781259F-111A-4431-997E-EEC779717B04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F50D9FA-7512-4B19-B929-D895F38BD86D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F50D9FA-7512-4B19-B929-D895F38BD86D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F50D9FA-7512-4B19-B929-D895F38BD86D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F50D9FA-7512-4B19-B929-D895F38BD86D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6781259F-111A-4431-997E-EEC779717B04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6781259F-111A-4431-997E-EEC779717B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6781259F-111A-4431-997E-EEC779717B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6781259F-111A-4431-997E-EEC779717B04}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
