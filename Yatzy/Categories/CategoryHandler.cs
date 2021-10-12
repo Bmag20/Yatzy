@@ -4,7 +4,7 @@ namespace Yatzy.Categories
     {
         private ICategory _category;
 
-        public void SetStrategy(ICategory categoryToSet)
+        public void SetCategory(ICategory categoryToSet)
         {
             _category = categoryToSet;
         }
