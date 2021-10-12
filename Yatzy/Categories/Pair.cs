@@ -1,7 +1,6 @@
 using System.Linq;
-using Yatzy.Categories;
 
-namespace Yatzy
+namespace Yatzy.Categories
 {
     public class Pair : ICategory
     {

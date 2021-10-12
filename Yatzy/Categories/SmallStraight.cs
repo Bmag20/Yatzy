@@ -1,9 +1,8 @@
 using System.Linq;
-using Yatzy.Categories;
 
-namespace Yatzy
+namespace Yatzy.Categories
 {
-    class SmallStraight : ICategory
+    public class SmallStraight : ICategory
     {
         public int Score(int[] dice)
         {
