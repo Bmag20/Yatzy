@@ -1,13 +1,13 @@
 namespace Yatzy.Player
 {
-    public class Player
+    public class YatzyPlayer : IPlayer
     {
-        public string PlayerName { get; set; }
+        public string PlayerName { get; }
         public int Score { get; set; }
         
         public IScoreCard ScoreCard { get; }
         
-        public Player(string playerName, IScoreCard scoreCard)
+        public YatzyPlayer(string playerName, IScoreCard scoreCard)
         {
             PlayerName = playerName;
             ScoreCard = scoreCard;

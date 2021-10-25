@@ -8,7 +8,7 @@ namespace YatzyTests.Player_Tests
         [Fact]
         public void GetScore_Initially_Returns0()
         {
-            Player player = new Player("Bhuvana", new ScoreCard());
+            YatzyPlayer player = new YatzyPlayer("Bhuvana", new ScoreCard());
             Assert.Equal(0, player.Score);
         }
     }

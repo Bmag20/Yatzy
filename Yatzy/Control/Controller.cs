@@ -9,11 +9,12 @@ namespace Yatzy.Control
         private const int NumberOfDicePerRoll = 5;
         private readonly IInputHandler _inputReader;
         private readonly IOutputHandler _outputWriter;
-        private GameEngine Game { get; }
+        private Game Game { get; }
         private List<CategoryRecord> _unPlayedCategories;
         private bool _playerQuit;
+        private IPlayer _currentPlayer;
 
-        public Controller(GameEngine game, IInputHandler inputReader, IOutputHandler outputWriter)
+        public Controller(Game game, IInputHandler inputReader, IOutputHandler outputWriter)
         {
             Game = game;
             _inputReader = inputReader;
@@ -23,25 +24,37 @@ namespace Yatzy.Control
 
         public void ConductGame()
         {
-             while(!_playerQuit && !Game.IsGameEnded())
-                ConductTurn();
-             _outputWriter.Display(GameInstructions.GameEnded());
+            while (!_playerQuit && !Game.IsGameEnded())
+            {
+                foreach (var player in Game.Players)
+                {
+                    _currentPlayer = player;
+                    _outputWriter.PlayerTurn(_currentPlayer);
+                    CheckIfPlayerWantsToQuit();
+                    if (_playerQuit)
+                    {
+                        _outputWriter.PlayerAbandoned(_currentPlayer);
+                        break;
+                    }
+                    DisplayCategoriesState();
+                    ConductTurn();
+                }
+            }
+            _outputWriter.DisplayFinalScores(Game.Players);
+            _outputWriter.Display(GameInstructions.GameEnded());
         }
 
         private void ConductTurn()
         {
-            _outputWriter.PlayerTurn(Game.Player);
-            DisplayCategoriesState();
             Game.YatzyTurn.RollDice();
             _outputWriter.DisplayDice(Game.YatzyTurn.GetDiceValues());
             ConductReRoll();
-            Game.CalculateUnPlayedCategoryScores();
-            _unPlayedCategories = Game.GetUnPlayedCategories();
+            Game.CalculateUnPlayedCategoryScores(_currentPlayer);
+            _unPlayedCategories = Game.GetUnPlayedCategories(_currentPlayer);
             _outputWriter.DisplayCategoryScores(_unPlayedCategories);
             var categoryIndex = GetValidCategoryIndex();
-            Game.LockCategory(Game.GetUnPlayedCategories()[categoryIndex]);
-            _outputWriter.PlayerScore(Game.Player);
-            CheckIfPlayerWantsToQuit();
+            Game.LockCategory(_unPlayedCategories[categoryIndex], _currentPlayer);
+            _outputWriter.PlayerScore(_currentPlayer);
         }
 
         private void ConductReRoll()
@@ -67,7 +80,7 @@ namespace Yatzy.Control
             {
                 _outputWriter.Display(GameInstructions.NumberToReRoll());
                 var playerInput = _inputReader.GetNumericInput();
-                if (InputValidator.IsValidValue(playerInput, NumberOfDicePerRoll))
+                if (InputValidator.IsLessThan(playerInput, NumberOfDicePerRoll))
                     reRollDice.Add(playerInput);
                 else
                     return reRollDice.ToArray();
@@ -76,9 +89,9 @@ namespace Yatzy.Control
         private void DisplayCategoriesState()
         {
             _outputWriter.Display("Played Categories : ");
-            _outputWriter.DisplayCategories(Game.GetPlayedCategories());
+            _outputWriter.DisplayCategories(Game.GetPlayedCategories(_currentPlayer));
             _outputWriter.Display("Categories to be played: ");
-            _outputWriter.DisplayCategories(Game.GetUnPlayedCategories());
+            _outputWriter.DisplayCategories(Game.GetUnPlayedCategories(_currentPlayer));
         }
 
         private int GetValidCategoryIndex()
@@ -87,7 +100,7 @@ namespace Yatzy.Control
             {
                 _outputWriter.Display(GameInstructions.AskCategory());
                 var playerInput = _inputReader.GetNumericInput();
-                if (InputValidator.IsValidValue(playerInput, _unPlayedCategories.Count + 1))
+                if (InputValidator.IsLessThan(playerInput, _unPlayedCategories.Count))
                     return playerInput - 1;
                 _outputWriter.Display(GameInstructions.InValidCategory());
             }

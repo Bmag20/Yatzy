@@ -7,7 +7,7 @@ namespace Yatzy.InputOutput
     public class YatzyDisplay : IOutputHandler
     {
         public void Display(string text) => Console.WriteLine(text);
-        public void PlayerTurn(Player.Player player)
+        public void PlayerTurn(IPlayer player)
         {
             PrintNewLine();
             Console.WriteLine($"{player.PlayerName}'s turn");
@@ -15,10 +15,26 @@ namespace Yatzy.InputOutput
             PrintNewLine();
         }
 
-        public void PlayerScore(Player.Player player)
+        public void PlayerScore(IPlayer player)
         {
             PrintNewLine();
             Console.WriteLine($"{player.PlayerName}'s total score is {player.Score}");
+            PrintNewLine();
+        }
+        
+        public void PlayerAbandoned(IPlayer player)
+        {
+            PrintNewLine();
+            Console.WriteLine($"{player.PlayerName} abandoned!");
+            PrintNewLine();
+        }
+
+        public void DisplayFinalScores(List<IPlayer> players)
+        {
+            PrintNewLine();
+            Console.WriteLine("Player final scores");
+            foreach (var player in players)
+                Console.WriteLine($"{player.PlayerName} - {player.Score}");
             PrintNewLine();
         }
 
@@ -37,7 +53,7 @@ namespace Yatzy.InputOutput
             PrintNewLine();
             int i = 0;
             categoryRecords.ForEach(category => {
-                Console.WriteLine($"({++i}) {categoryRecords[i-1].CategoryName}   : {categoryRecords[i-1].Score}"); });
+                Console.WriteLine($"#{++i} {categoryRecords[i-1].CategoryName}   : {categoryRecords[i-1].Score}"); });
             PrintNewLine();
         }
 
