@@ -6,12 +6,14 @@ namespace Yatzy.InputOutput
     public interface IOutputHandler
     {
         public void Display(string text);
-        void PlayerTurn(Player.Player player);
+        void PlayerTurn(IPlayer player);
 
-        void PlayerScore(Player.Player player);
+        void PlayerScore(IPlayer player);
         public void DisplayDice(int[] dice);
         void DisplayCategoryScores(List<CategoryRecord> categoryRecords);
         public void PrintNewLine();
         void DisplayCategories(List<CategoryRecord> getPlayedCategories);
+        void PlayerAbandoned(IPlayer player);
+        void DisplayFinalScores(List<IPlayer> players);
     }
 }

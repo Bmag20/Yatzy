@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace Yatzy.Dice
 {
-    public class YatzyTurn
+    public class YatzyTurn : IYatzyTurn
     {
         private const int NumberOfDicePerRoll = 5;
         private const int MaximumRolls = 3;
-        public Die[] Dice { get; private set; }
+        public Die[] Dice { get; }
         public int Rolls { get; private set; }
 
         public YatzyTurn()

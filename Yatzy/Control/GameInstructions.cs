@@ -5,6 +5,11 @@ namespace Yatzy.Control
     public static class GameInstructions
     {
         public static string WelcomeMessage() => "Welcome to Yatzy!!";
+        public static string NumberOfPlayersPrompt() => "Please enter the number of players that wish to play";
+        public static string ReEnterNumberOfPlayers()
+        {
+            return "Oh no! That's not permissible! The maximum number of players can be 10! \nPlease enter again ";
+        }
         public static string PlayerNamePrompt() => "Please enter the player's name";
         public static string WantsToQuit() => "Please enter any key to roll the dice. Press (Q) to exit : ";
         public static string ReRollPrompt()
@@ -15,6 +20,6 @@ namespace Yatzy.Control
         public static string AskCategory() => "Please enter the category number you wish to play your roll: ";
         public static string InValidCategory() => "The current selection is invalid!!";
         public static string GameEnded() => "Game is ended! Thank you for playing :) ";
-
+        
     }
 }

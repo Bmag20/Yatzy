@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using Xunit;
 using Yatzy.CategoryStrategy;
 using Yatzy.Control;
+using Yatzy.Dice;
 using Yatzy.Player;
 using YatzyTests.UtilityClasses;
 
@@ -14,10 +16,11 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
-            GameEngine gameEngine = new GameEngine(new Player("Bhuvana", testScoreCard));
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
             gameEngine.YatzyTurn.RollDice();
             //Act
-            gameEngine.CalculateUnPlayedCategoryScores();
+            gameEngine.CalculateUnPlayedCategoryScores(player);
             Assert.Equal(new OnesCategory().Score(gameEngine.YatzyTurn.GetDiceValues()),
                 testScoreCard.Categories[0].Score);
             Assert.Equal(new TwosCategory().Score(gameEngine.YatzyTurn.GetDiceValues()),
@@ -33,10 +36,11 @@ namespace YatzyTests.ControlTests
             IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
             testScoreCard.Categories[0].Played = true;
             var initialScore = testScoreCard.Categories[0].Score;
-            GameEngine gameEngine = new GameEngine(new Player("Bhuvana", testScoreCard));
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
             gameEngine.YatzyTurn.RollDice();
             //Act
-            gameEngine.CalculateUnPlayedCategoryScores();
+            gameEngine.CalculateUnPlayedCategoryScores(player);
             Assert.Equal(initialScore, testScoreCard.Categories[0].Score);
         }
 
@@ -46,10 +50,11 @@ namespace YatzyTests.ControlTests
             //Arrange
             IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
             testScoreCard.Categories[0].Played = true;
-            GameEngine gameEngine = new GameEngine(new Player("Bhuvana", testScoreCard));
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
             gameEngine.YatzyTurn.RollDice();
             //Act
-            gameEngine.CalculateUnPlayedCategoryScores();
+            gameEngine.CalculateUnPlayedCategoryScores(player);
             Assert.Equal(new TwosCategory().Score(gameEngine.YatzyTurn.GetDiceValues()),
                 testScoreCard.Categories[1].Score);
             Assert.Equal(new ThreesCategory().Score(gameEngine.YatzyTurn.GetDiceValues()),
@@ -63,9 +68,10 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
-            GameEngine gameEngine = new GameEngine(new Player("Bhuvana", testScoreCard));
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
             //Act
-            gameEngine.LockCategory(testScoreCard.Categories[0]);
+            gameEngine.LockCategory(testScoreCard.Categories[0], player);
             //Assert
             Assert.True(testScoreCard.Categories[0].Played);
         }
@@ -78,10 +84,11 @@ namespace YatzyTests.ControlTests
             const int testScore = 5;
             var onesCategory = testScoreCard.Categories[0];
             onesCategory.Score = testScore;
-            Player player = new Player("Bhuvana", testScoreCard);
-            GameEngine gameEngine = new GameEngine(player);
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            var players = new List<IPlayer>(){player};
+            Game gameEngine = new Game(players, new YatzyTurn());
             //Act
-            gameEngine.LockCategory(onesCategory);
+            gameEngine.LockCategory(onesCategory, player);
             //Assert
             Assert.Equal(testScore, player.Score);
         }
@@ -94,8 +101,8 @@ namespace YatzyTests.ControlTests
             //Arrange
             IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
             testScoreCard.Categories[0].Played = false;
-            Player player = new Player("Bhuvana", testScoreCard);
-            GameEngine gameEngine = new GameEngine(player);
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
             //Act
             var gameEnded = gameEngine.IsGameEnded();
             //Assert
@@ -110,8 +117,51 @@ namespace YatzyTests.ControlTests
             testScoreCard.Categories[0].Played = true;
             testScoreCard.Categories[1].Played = true;
             testScoreCard.Categories[2].Played = true;
-            Player player = new Player("Bhuvana", testScoreCard);
-            GameEngine gameEngine = new GameEngine(player);
+            var player = new YatzyPlayer("Bhuvana", testScoreCard);
+            Game gameEngine = new Game(new List<IPlayer>(){player}, new YatzyTurn());
+            //Act
+            var gameEnded = gameEngine.IsGameEnded();
+            //Assert
+            Assert.True(gameEnded);
+        }
+        
+        // Multi player game
+        [Fact]
+        public void IsGameEnded_WithAllCategoriesPlayedForOnly1Player_ReturnsFalse()
+        {
+            //Arrange
+            IScoreCard testScoreCard1 = new OnesTwosThreesScoreCard();
+            testScoreCard1.Categories[0].Played = true;
+            testScoreCard1.Categories[1].Played = true;
+            testScoreCard1.Categories[2].Played = true;
+            var player1 = new YatzyPlayer("Bhuvana", testScoreCard1);
+            IScoreCard testScoreCard2 = new OnesTwosThreesScoreCard();
+            testScoreCard2.Categories[0].Played = true;
+            testScoreCard2.Categories[1].Played = true;
+            testScoreCard2.Categories[2].Played = false;
+            var player2 = new YatzyPlayer("Sandy", testScoreCard2);
+            Game gameEngine = new Game(new List<IPlayer>(){player1, player2}, new YatzyTurn());
+            //Act
+            var gameEnded = gameEngine.IsGameEnded();
+            //Assert
+            Assert.False(gameEnded);
+        }
+        
+        [Fact]
+        public void IsGameEnded_WithAllCategoriesPlayedForAllPlayer_ReturnsTrue()
+        {
+            //Arrange
+            IScoreCard testScoreCard1 = new OnesTwosThreesScoreCard();
+            testScoreCard1.Categories[0].Played = true;
+            testScoreCard1.Categories[1].Played = true;
+            testScoreCard1.Categories[2].Played = true;
+            var player1 = new YatzyPlayer("Bhuvana", testScoreCard1);
+            IScoreCard testScoreCard2 = new OnesTwosThreesScoreCard();
+            testScoreCard2.Categories[0].Played = true;
+            testScoreCard2.Categories[1].Played = true;
+            testScoreCard2.Categories[2].Played = true;
+            var player2 = new YatzyPlayer("Sandy", testScoreCard2);
+            Game gameEngine = new Game(new List<IPlayer>(){player1, player2}, new YatzyTurn());
             //Act
             var gameEnded = gameEngine.IsGameEnded();
             //Assert
