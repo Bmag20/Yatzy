@@ -10,24 +10,38 @@ namespace Yatzy.Control
     {
         public List<IPlayer> Players { get; }
         public IYatzyTurn YatzyTurn { get; }
-        private readonly CategoryScorerStrategy _categoryHandler;
+        
+        private readonly CategoryScorerStrategy _categoryScorer;
         
         public Game(List<IPlayer> players, IYatzyTurn yatzyTurn)
         {
             Players = players;
             YatzyTurn = yatzyTurn;
-            _categoryHandler = new CategoryScorerStrategy();
+            _categoryScorer = new CategoryScorerStrategy();
         }
+
+        public void RollDice() => YatzyTurn.RollDice();
+        public int[] GetCurrentRoll() => YatzyTurn.GetDiceValues();
+        public bool CanBeReRolled() => YatzyTurn.CanBeRolled();
+        public void ReRollDice(int[] reRollDice) =>  YatzyTurn.ReRoll(reRollDice);
+        public int GetNumberOfDicePerRoll() =>  YatzyTurn.Dice.Length;
+        public bool IsGameEnded() => Players.All(p => p.ScoreCard.AreAllCategoriesPlayed());
 
         public void CalculateUnPlayedCategoryScores(IPlayer player)
         {
             foreach (var categoryRecord in player.ScoreCard.Categories.Where(categoryRecord => !categoryRecord.Played))
             {
-                _categoryHandler.SetCategory(categoryRecord.Category);
-                categoryRecord.Score = _categoryHandler.GetScore(YatzyTurn.GetDiceValues());
+                _categoryScorer.SetCategory(categoryRecord.Category);
+                categoryRecord.Score = _categoryScorer.GetScore(YatzyTurn.GetDiceValues());
             }
         }
-
+        
+        public void LockCategory(CategoryRecord categoryRecord, IPlayer player)
+        {
+            categoryRecord.Played = true;
+            player.Score += categoryRecord.Score;
+        }
+        
         public List<CategoryRecord> GetPlayedCategories(IPlayer player)
         {
             return player.ScoreCard.Categories.Where(categoryRecord => categoryRecord.Played).ToList();
@@ -38,20 +52,10 @@ namespace Yatzy.Control
             return player.ScoreCard.Categories.Where(categoryRecord => !categoryRecord.Played).ToList();
         }
 
-        public virtual void LockCategory(CategoryRecord categoryRecord, IPlayer player)
+        public List<IPlayer> DetermineWinner()
         {
-            categoryRecord.Played = true;
-            player.Score += categoryRecord.Score;
-        }
-        
-        public bool IsGameEnded()
-        {
-            return Players.All(p => p.ScoreCard.AreAllCategoriesPlayed());
-        }
-
-        public virtual void ReRollDice(int[] reRollDice)
-        {
-            YatzyTurn.ReRoll(reRollDice);
+            var highestScore = Players.Select(player => player.Score).Max();
+            return highestScore > 0 ? Players.Where(player => player.Score == highestScore).ToList() : new List<IPlayer>();
         }
     }
 }

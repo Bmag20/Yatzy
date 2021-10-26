@@ -12,8 +12,8 @@ namespace YatzyTests.InputOutputTests
         {
             var input = new StringReader("y");
             Console.SetIn(input);
-            var testReader = new YatzyReader();
-            var actualValue = testReader.GetPlayerInput();
+            var testReader = new ConsoleReader();
+            var actualValue = testReader.GetStringInput();
             Assert.Equal("y", actualValue);
         }
         
@@ -22,7 +22,7 @@ namespace YatzyTests.InputOutputTests
         {
             var input = new StringReader("123");
             Console.SetIn(input);
-            var testReader = new YatzyReader();
+            var testReader = new ConsoleReader();
             var actualValue = testReader.GetNumericInput();
             Assert.Equal(123, actualValue);
         }
@@ -35,7 +35,7 @@ namespace YatzyTests.InputOutputTests
         {
             var input = new StringReader(testInput);
             Console.SetIn(input);
-            var testReader = new YatzyReader();
+            var testReader = new ConsoleReader();
             var actualValue = testReader.GetNumericInput();
             Assert.Equal(-1, actualValue);
         }

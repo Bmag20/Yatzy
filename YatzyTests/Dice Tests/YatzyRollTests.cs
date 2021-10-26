@@ -34,6 +34,7 @@ namespace YatzyTests.Dice_Tests
         public void DiceFaceValueInYatzyTurn_IsLessThan7()
         {
             var yatzyTurn = new YatzyTurn();
+            yatzyTurn.RollDice();
             foreach (var die in yatzyTurn.Dice)
             {
                 Assert.True(die.FaceValue < 7);
@@ -45,6 +46,7 @@ namespace YatzyTests.Dice_Tests
         public void ReRoll_ChangesFaceValueOfSelectedDice()
         {
             YatzyTurn yatzyTurn = new YatzyTurn();
+            yatzyTurn.RollDice();
             var initialDiceValues = yatzyTurn.GetDiceValues();
             var diceToReRoll = new[] {1, 3, 5};
             yatzyTurn.ReRoll(diceToReRoll);
@@ -86,7 +88,7 @@ namespace YatzyTests.Dice_Tests
             // Arrange
             YatzyTurn yatzyTurn = new YatzyTurn();
             yatzyTurn.RollDice();
-            yatzyTurn.ReRoll(new int[]{1});
+            yatzyTurn.ReRoll(new[]{1});
             Assert.Equal(2, yatzyTurn.Rolls);
         }
         
@@ -96,18 +98,25 @@ namespace YatzyTests.Dice_Tests
         {
             YatzyTurn bunch = new YatzyTurn();
             bunch.RollDice();
-            bunch.ReRoll(new int[]{1});
-            bunch.ReRoll(new int[]{1});
-            Assert.Throws<InvalidOperationException>(() => bunch.ReRoll(new int[]{1}));
+            bunch.ReRoll(new[]{1});
+            bunch.ReRoll(new[]{1});
+            Assert.Throws<InvalidOperationException>(() => bunch.ReRoll(new[]{1}));
         }
         
-        // Split into 2 tests
         [Fact]
-        public void CanBeRolled_Before2ReRolls_ReturnsTrue()
+        public void CanBeRolled_AfterFirstRoll_ReturnsTrue()
         {
             YatzyTurn bunch = new YatzyTurn();
+            bunch.RollDice();
             Assert.True(bunch.CanBeRolled());
-            bunch.ReRoll(new int[]{1});
+        }
+        
+        [Fact]
+        public void CanBeRolled_AfterFirstReRoll_ReturnsTrue()
+        {
+            YatzyTurn bunch = new YatzyTurn();
+            bunch.RollDice();
+            bunch.ReRoll(new[]{1});
             Assert.True(bunch.CanBeRolled());
         }
         
@@ -116,8 +125,8 @@ namespace YatzyTests.Dice_Tests
         {
             YatzyTurn bunch = new YatzyTurn();
             bunch.RollDice();
-            bunch.ReRoll(new int[]{1});
-            bunch.ReRoll(new int[]{1});
+            bunch.ReRoll(new[]{1});
+            bunch.ReRoll(new[]{1});
             Assert.False(bunch.CanBeRolled());
         }
     }

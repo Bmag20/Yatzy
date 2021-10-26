@@ -1,6 +1,4 @@
-using System;
-
-namespace Yatzy.Control
+namespace Yatzy.InputOutput
 {
     public static class GameInstructions
     {

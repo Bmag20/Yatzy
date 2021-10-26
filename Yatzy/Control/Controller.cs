@@ -6,112 +6,86 @@ namespace Yatzy.Control
 {
     public class Controller
     {
-        private const int NumberOfDicePerRoll = 5;
-        private readonly IInputHandler _inputReader;
         private readonly IOutputHandler _outputWriter;
         private Game Game { get; }
         private List<CategoryRecord> _unPlayedCategories;
-        private bool _playerQuit;
         private IPlayer _currentPlayer;
 
-        public Controller(Game game, IInputHandler inputReader, IOutputHandler outputWriter)
+        public Controller(Game game, IOutputHandler outputWriter)
         {
             Game = game;
-            _inputReader = inputReader;
             _outputWriter = outputWriter;
-            _playerQuit = false;
         }
 
         public void ConductGame()
         {
-            while (!_playerQuit && !Game.IsGameEnded())
+            while (!Game.IsGameEnded())
             {
                 foreach (var player in Game.Players)
                 {
                     _currentPlayer = player;
                     _outputWriter.PlayerTurn(_currentPlayer);
-                    CheckIfPlayerWantsToQuit();
-                    if (_playerQuit)
+                    if (_currentPlayer.ResponseHandler.PlayerWantsToQuit())
                     {
-                        _outputWriter.PlayerAbandoned(_currentPlayer);
-                        break;
+                        AbandonGame();
+                        EndGame();
+                        return;
                     }
-                    DisplayCategoriesState();
                     ConductTurn();
                 }
             }
-            _outputWriter.DisplayFinalScores(Game.Players);
-            _outputWriter.Display(GameInstructions.GameEnded());
+            EndGame();
         }
 
         private void ConductTurn()
         {
-            Game.YatzyTurn.RollDice();
-            _outputWriter.DisplayDice(Game.YatzyTurn.GetDiceValues());
+            DisplayCategoriesState();
+            Game.RollDice();
+            _outputWriter.DisplayDice(Game.GetCurrentRoll());
             ConductReRoll();
             Game.CalculateUnPlayedCategoryScores(_currentPlayer);
             _unPlayedCategories = Game.GetUnPlayedCategories(_currentPlayer);
             _outputWriter.DisplayCategoryScores(_unPlayedCategories);
-            var categoryIndex = GetValidCategoryIndex();
+            var categoryIndex = _currentPlayer.ResponseHandler.CategoryIndexToPlaceRoll(_unPlayedCategories.Count);
             Game.LockCategory(_unPlayedCategories[categoryIndex], _currentPlayer);
             _outputWriter.PlayerScore(_currentPlayer);
         }
 
         private void ConductReRoll()
         {
-            bool userWantsToReRoll = true;  
-            while (userWantsToReRoll && Game.YatzyTurn.CanBeRolled())
+            var userWantsToReRoll = true;
+            while (userWantsToReRoll && Game.CanBeReRolled())
             {
-                _outputWriter.Display(GameInstructions.ReRollPrompt());
-                userWantsToReRoll = InputValidator.IsYes(_inputReader.GetPlayerInput());
+                _outputWriter.DisplayReRollPrompt();
+                userWantsToReRoll = _currentPlayer.ResponseHandler.PlayerWantsToReRoll();
                 if (userWantsToReRoll)
                 {
-                    var reRollDice = GetDiceIndicesToReRoll();
+                    var reRollDice = _currentPlayer.ResponseHandler.DiceIndicesToReRoll(Game.GetNumberOfDicePerRoll());
                     Game.ReRollDice(reRollDice);
                 }
-                _outputWriter.DisplayDice(Game.YatzyTurn.GetDiceValues());
+                _outputWriter.DisplayDice(Game.GetCurrentRoll());
             }
         }
 
-        private int[] GetDiceIndicesToReRoll()
-        {
-            List<int> reRollDice = new List<int>();
-            while (true)
-            {
-                _outputWriter.Display(GameInstructions.NumberToReRoll());
-                var playerInput = _inputReader.GetNumericInput();
-                if (InputValidator.IsLessThan(playerInput, NumberOfDicePerRoll))
-                    reRollDice.Add(playerInput);
-                else
-                    return reRollDice.ToArray();
-            }
-        }
         private void DisplayCategoriesState()
         {
-            _outputWriter.Display("Played Categories : ");
-            _outputWriter.DisplayCategories(Game.GetPlayedCategories(_currentPlayer));
-            _outputWriter.Display("Categories to be played: ");
-            _outputWriter.DisplayCategories(Game.GetUnPlayedCategories(_currentPlayer));
+            _outputWriter.DisplayPlayedCategories(Game.GetPlayedCategories(_currentPlayer));
+            _outputWriter.DisplayUnPlayedCategories(Game.GetUnPlayedCategories(_currentPlayer));
         }
 
-        private int GetValidCategoryIndex()
+        private void AbandonGame()
         {
-            while(true)
-            {
-                _outputWriter.Display(GameInstructions.AskCategory());
-                var playerInput = _inputReader.GetNumericInput();
-                if (InputValidator.IsLessThan(playerInput, _unPlayedCategories.Count))
-                    return playerInput - 1;
-                _outputWriter.Display(GameInstructions.InValidCategory());
-            }
+            _outputWriter.PlayerAbandoned(_currentPlayer);
+            _outputWriter.DisplayFinalScores(Game.Players);
+            _outputWriter.DisplayGameEnded();
         }
-
-        private void CheckIfPlayerWantsToQuit()
+        
+        private void EndGame()
         {
-            _outputWriter.Display(GameInstructions.WantsToQuit());
-            var playerInput = _inputReader.GetPlayerInput();
-            _playerQuit = InputValidator.IsQuit(playerInput);
+            _outputWriter.DisplayFinalScores(Game.Players);
+            var winners = Game.DetermineWinner();
+            _outputWriter.DisplayWinners(winners);
+            _outputWriter.DisplayGameEnded();
         }
-
     }
 }

@@ -1,3 +1,5 @@
+using Yatzy.InputOutput;
+
 namespace Yatzy.Player
 {
     public class YatzyPlayer : IPlayer
@@ -6,11 +8,13 @@ namespace Yatzy.Player
         public int Score { get; set; }
         
         public IScoreCard ScoreCard { get; }
-        
-        public YatzyPlayer(string playerName, IScoreCard scoreCard)
+        public IInteractor ResponseHandler { get; }
+
+        public YatzyPlayer(string playerName, IScoreCard scoreCard, IInteractor responseGenerator)
         {
             PlayerName = playerName;
             ScoreCard = scoreCard;
+            ResponseHandler = responseGenerator;
             Score = 0;
         }
     }
