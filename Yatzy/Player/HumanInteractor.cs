@@ -21,7 +21,7 @@ namespace Yatzy.Player
 
         public int[] DiceIndicesToReRoll(int numberOfDicePerRoll)
         {
-            List<int> reRollDice = new List<int>();
+            var reRollDice = new List<int>();
             while (true)
             {
                 _outputWriter.Display(GameInstructions.NumberToReRoll());

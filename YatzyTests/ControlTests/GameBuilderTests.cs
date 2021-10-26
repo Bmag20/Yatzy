@@ -17,7 +17,7 @@ namespace YatzyTests.ControlTests
             const string name = "Bhuvana";
             inputReaderMock.Setup(i => i.GetNumericInput()).Returns(1);
             inputReaderMock.Setup(i => i.GetStringInput()).Returns(name);
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert
@@ -32,7 +32,7 @@ namespace YatzyTests.ControlTests
             const string name = "Bhuvana";
             inputReaderMock.Setup(i => i.GetNumericInput()).Returns(1);
             inputReaderMock.Setup(i => i.GetStringInput()).Returns(name);
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert
@@ -48,7 +48,7 @@ namespace YatzyTests.ControlTests
             const string name = "Bhuvana";
             inputReaderMock.Setup(i => i.GetNumericInput()).Returns(1);
             inputReaderMock.Setup(i => i.GetStringInput()).Returns(name);
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert
@@ -57,14 +57,14 @@ namespace YatzyTests.ControlTests
 
         // Multi player game
         [Fact]
-        public void SetUpGame_TakesPlayerCount2_ReturnsGameObjectWith2Players()
+        public void SetUpGame_TakesPlayerCountAs2_ReturnsGameObjectWith2Players()
         {
             //Arrange
             var inputReaderMock = new Mock<IInputHandler>();
             var playerCount = 2;
             inputReaderMock.SetupSequence(i => i.GetNumericInput()).Returns(playerCount);
             inputReaderMock.SetupSequence(i => i.GetStringInput()).Returns("Randy").Returns("Brody");
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, OutputWriter);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert
@@ -79,7 +79,7 @@ namespace YatzyTests.ControlTests
             inputReaderMock.SetupSequence(i => i.GetNumericInput()).Returns(11).Returns(1);
             inputReaderMock.SetupSequence(i => i.GetStringInput()).Returns("Randy").Returns("Brody");
             var outputReaderMock = new Mock<IOutputHandler>();
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, outputReaderMock.Object);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, outputReaderMock.Object);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert
@@ -95,7 +95,7 @@ namespace YatzyTests.ControlTests
             inputReaderMock.SetupSequence(i => i.GetNumericInput()).Returns(playerCount);
             inputReaderMock.SetupSequence(i => i.GetStringInput()).Returns("Randy").Returns("Brody");
             var outputReaderMock = new Mock<IOutputHandler>();
-            GameBuilder gameBuilder = new GameBuilder(inputReaderMock.Object, outputReaderMock.Object);
+            var gameBuilder = new GameBuilder(inputReaderMock.Object, outputReaderMock.Object);
             //Act
             var actualGame = gameBuilder.SetUpGame();
             //Assert

@@ -28,7 +28,6 @@ namespace Yatzy.Control
                     if (_currentPlayer.ResponseHandler.PlayerWantsToQuit())
                     {
                         AbandonGame();
-                        EndGame();
                         return;
                     }
                     ConductTurn();

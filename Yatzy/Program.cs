@@ -10,7 +10,7 @@ namespace Yatzy
             IInputHandler inputHandler = new ConsoleReader();
             IOutputHandler outputHandler = new ConsoleDisplay();
             IGameBuilder gameBuilder = new GameBuilder(inputHandler, outputHandler);
-            Game game = gameBuilder.SetUpGame();
+            var game = gameBuilder.SetUpGame();
             var gameController = new Controller(game, outputHandler);
             gameController.ConductGame();
         }
