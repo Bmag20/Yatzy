@@ -3,26 +3,33 @@ using System.Linq;
 
 namespace Yatzy.Dice
 {
-    public class YatzyTurn : IYatzyTurn
+    public class YatzyTurn
     {
-        private const int NumberOfDicePerRoll = 5;
-        private const int MaximumRolls = 3;
-        public Die[] Dice { get; }
+        private readonly int _numberOfDicePerRoll;
+        private readonly int _maximumRolls;
+        public Die[] Dice { get; private set; }
         public int Rolls { get; private set; }
 
-        public YatzyTurn()
+        public YatzyTurn(int numberOfDicePerRoll, int maximumRolls)
         {
-            Dice = new Die[NumberOfDicePerRoll];
-            for (int i = 0; i < NumberOfDicePerRoll; i++)
+            _numberOfDicePerRoll = numberOfDicePerRoll;
+            _maximumRolls = maximumRolls;
+            InitialiseDice();
+            Rolls = 0;
+        }
+
+        private void InitialiseDice()
+        {
+            Dice = new Die[_numberOfDicePerRoll];
+            for (var i = 0; i < _numberOfDicePerRoll; i++)
             {
                 Dice[i] = new Die();
             }
-            Rolls = 0;
         }
 
         public void RollDice()
         {
-            for (var i = 0; i < NumberOfDicePerRoll; i++)
+            for (var i = 0; i < _numberOfDicePerRoll; i++)
                 Dice[i].Roll();
             Rolls = 1;
         }
@@ -43,9 +50,6 @@ namespace Yatzy.Dice
             Rolls++;
         }
 
-        public bool CanBeRolled()
-        {
-            return Rolls < MaximumRolls;
-        }
+        public bool CanBeRolled() => Rolls < _maximumRolls;
     }
 }

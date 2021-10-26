@@ -91,7 +91,7 @@ namespace Yatzy.InputOutput
         public void DisplayCategoryScores(List<CategoryRecord> categoryRecords)
         {
             PrintNewLine();
-            int i = 0;
+            var i = 0;
             categoryRecords.ForEach(_ => {
                 Console.WriteLine($"({++i}) {categoryRecords[i-1].CategoryName}   : {categoryRecords[i-1].Score}"); });
             PrintNewLine();

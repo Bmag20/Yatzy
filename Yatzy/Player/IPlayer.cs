@@ -6,7 +6,7 @@ namespace Yatzy.Player
     {
         public string PlayerName { get; }
         public int Score { get; set; }
-        public IScoreCard ScoreCard { get; }
+        public ScoreCard ScoreCard { get; }
         
         public IInteractor ResponseHandler { get; }
     }

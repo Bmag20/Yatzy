@@ -11,26 +11,17 @@ namespace YatzyTests.ControlTests
 {
     public class ControllerTests
     {
+        private const int NumberOfDicePerRoll = 5;
+        private const int MaximumRolls = 3;
+        
         // Dice are displayed at the beginning of each turn
-
-        private static Game GetGameEngineWithExitSequence()
-        {
-            IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
-            var humanResponseMock = new Mock<IInteractor>();
-            humanResponseMock.SetupSequence(r => r.PlayerWantsToQuit()).Returns(false).Returns(true);
-            humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(false);
-            humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(15)).Returns(1);
-            IPlayer bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
-            List<IPlayer> players = new List<IPlayer> {bhuvana};
-            return new Game(players, new YatzyTurn());
-        }
 
         [Fact]
         public void ConductGame_DisplaysDiceValues_AtTheBeginningOfTheTurn()
         {
             //Arrange
             var outputMock = new Mock<IOutputHandler>();
-            Controller controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
+            var controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
             //Act
             controller.ConductGame();
             //Assert
@@ -44,7 +35,7 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             var outputMock = new Mock<IOutputHandler>();
-            Controller controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
+            var controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
             //Act
             controller.ConductGame();
             //Assert
@@ -57,7 +48,7 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             var outputMock = new Mock<IOutputHandler>();
-            Controller controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
+            var controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
             //Act
             controller.ConductGame();
             //Assert
@@ -65,25 +56,38 @@ namespace YatzyTests.ControlTests
         }
         
         [Fact]
-        public void ConductGame_TakeDiceNumbersToReRoll_ReRollsThePickedDice()
+        public void ConductGame_PlayerInputsQ_PlayerAbandonedMessageIsDisplayed()
         {
             //Arrange
-            var humanResponseMock = new Mock<IInteractor>();
-            humanResponseMock.SetupSequence(r => r.PlayerWantsToQuit()).Returns(false).Returns(true);
-            humanResponseMock.SetupSequence(r => r.PlayerWantsToReRoll()).Returns(true);
-            humanResponseMock.Setup(r => r.DiceIndicesToReRoll(It.IsAny<int>())).Returns(new[] {1});
-            humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(It.IsAny<int>())).Returns(1);
-            IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
-            var bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
-            var yatzyTurnMock = new Mock<IYatzyTurn>();
-            yatzyTurnMock.SetupSequence(y => y.CanBeRolled()).Returns(true).Returns(false);
-            var game = new Game(new List<IPlayer>() {bhuvana}, yatzyTurnMock.Object);
-            Controller controller = new Controller(game, new ConsoleDisplay());
+            var outputMock = new Mock<IOutputHandler>();
+            var game = GetGameEngineWithExitSequence();
+            var controller = new Controller(game, outputMock.Object);
             //Act
             controller.ConductGame();
             //Assert
-            yatzyTurnMock.Verify(o => o.ReRoll(new[] {1}), Times.AtLeastOnce);
+            outputMock.Verify(o => o.PlayerAbandoned(game.Players[0]), Times.Once);
         }
+        
+        [Fact]
+        public void ConductGame_PromptsUserToReRollTwicePerTurn()
+        {
+            //Arrange
+            var oMock = new Mock<IOutputHandler>();
+            var humanResponseMock = new Mock<IInteractor>();
+            humanResponseMock.SetupSequence(r => r.PlayerWantsToQuit()).Returns(false).Returns(true);
+            humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(true);
+            humanResponseMock.Setup(r => r.DiceIndicesToReRoll(It.IsAny<int>())).Returns(new[] {1});
+            humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(It.IsAny<int>())).Returns(1);
+            var testScoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();;
+            var bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
+            var game = new Game(new List<IPlayer>() {bhuvana}, new YatzyTurn(NumberOfDicePerRoll, MaximumRolls));
+            var controller = new Controller(game, oMock.Object);
+            //Act
+            controller.ConductGame();
+            //Assert
+            oMock.Verify(o => o.DisplayReRollPrompt(), Times.Exactly(2));
+        }
+
 
         [Fact]
         public void ConductGame_UserSelectsValidCategory_SetsCategoryAsPlayed()
@@ -93,12 +97,10 @@ namespace YatzyTests.ControlTests
             humanResponseMock.SetupSequence(r => r.PlayerWantsToQuit()).Returns(false).Returns(true);
             humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(false);
             humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(It.IsAny<int>())).Returns(0);
-            IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
+            var testScoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();
             var bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
-            var yatzyTurnMock = new Mock<IYatzyTurn>();
-            yatzyTurnMock.SetupSequence(y => y.CanBeRolled()).Returns(true).Returns(false);
-            var game = new Game(new List<IPlayer>() {bhuvana}, yatzyTurnMock.Object);
-            Controller controller = new Controller(game, new ConsoleDisplay());
+            var game = new Game(new List<IPlayer>() {bhuvana}, new YatzyTurn(NumberOfDicePerRoll, MaximumRolls));
+            var controller = new Controller(game, new ConsoleDisplay());
             //Act
             controller.ConductGame();
             //Assert
@@ -110,7 +112,7 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             var oMock = new Mock<IOutputHandler>();
-            IScoreCard testScoreCard = new OnesTwosThreesScoreCard();
+            var testScoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();
             foreach (var categoryRecord in testScoreCard.Categories)
             {
                 categoryRecord.Played = true;
@@ -120,9 +122,9 @@ namespace YatzyTests.ControlTests
             humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(false);
             humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(15)).Returns(1);
             IPlayer bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
-            List<IPlayer> players = new List<IPlayer> {bhuvana};
-            var game = new Game(players, new YatzyTurn());
-            Controller controller = new Controller(game, oMock.Object);
+            var players = new List<IPlayer> {bhuvana};
+            var game = new Game(players, new YatzyTurn(NumberOfDicePerRoll, MaximumRolls));
+            var controller = new Controller(game, oMock.Object);
             //Act
             controller.ConductGame();
             //Assert
@@ -134,11 +136,35 @@ namespace YatzyTests.ControlTests
         {
             //Arrange
             var outputMock = new Mock<IOutputHandler>();
-            Controller controller = new Controller(GetGameEngineWithExitSequence(), outputMock.Object);
+            var controller = new Controller(GetGameEngineWithCompletePlaySequence(), outputMock.Object);
             //Act
             controller.ConductGame();
             //Assert
             outputMock.Verify(o => o.DisplayWinners(It.IsAny<List<IPlayer>>()), Times.AtLeastOnce);
+        }
+        
+        private static Game GetGameEngineWithExitSequence()
+        {
+            var testScoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();
+            var humanResponseMock = new Mock<IInteractor>();
+            humanResponseMock.SetupSequence(r => r.PlayerWantsToQuit()).Returns(false).Returns(true);
+            humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(false);
+            humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(15)).Returns(1);
+            IPlayer bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
+            var players = new List<IPlayer> {bhuvana};
+            return new Game(players, new YatzyTurn(NumberOfDicePerRoll, MaximumRolls));
+        }
+        
+        private static Game GetGameEngineWithCompletePlaySequence()
+        {
+            var testScoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();
+            var humanResponseMock = new Mock<IInteractor>();
+            humanResponseMock.Setup(r => r.PlayerWantsToQuit()).Returns(false);
+            humanResponseMock.Setup(r => r.PlayerWantsToReRoll()).Returns(false);
+            humanResponseMock.Setup(r => r.CategoryIndexToPlaceRoll(It.IsAny<int>())).Returns(0);
+            IPlayer bhuvana = new YatzyPlayer("Bhuvana", testScoreCard, humanResponseMock.Object);
+            var players = new List<IPlayer> {bhuvana};
+            return new Game(players, new YatzyTurn(NumberOfDicePerRoll, MaximumRolls));
         }
     }
 }

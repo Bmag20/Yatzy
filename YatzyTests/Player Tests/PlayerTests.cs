@@ -1,6 +1,7 @@
 using Xunit;
 using Yatzy.InputOutput;
 using Yatzy.Player;
+using YatzyTests.UtilityClasses;
 
 namespace YatzyTests.Player_Tests
 {
@@ -8,9 +9,10 @@ namespace YatzyTests.Player_Tests
     {
         private static readonly IInteractor HumanResponder = new HumanInteractor(new ConsoleReader(), new ConsoleDisplay());
         [Fact]
-        public void GetScore_Initially_Returns0()
+        public void GetScore_ForNewYatzyPlayer_Returns0()
         {
-            YatzyPlayer player = new YatzyPlayer("Bhuvana", new ScoreCard(), HumanResponder);
+            var scoreCard = SmallSCoreCard.GetOnesTwosThreesScoreCard();
+            var player = new YatzyPlayer("Bhuvana", scoreCard, HumanResponder);
             Assert.Equal(0, player.Score);
         }
     }

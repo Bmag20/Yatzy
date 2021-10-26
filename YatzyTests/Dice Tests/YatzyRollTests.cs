@@ -6,12 +6,14 @@ namespace YatzyTests.Dice_Tests
 {
     public class YatzyRollTests
     {
+        private const int NumberOfDicePerRoll = 5;
+        private const int MaximumRolls = 3;
         
         // Roll consists of 5 dice
         [Fact]
         public void YatzyTurn_ConsistsOf5Dice()
         {
-            var yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             var expectedSize = 5;
             var actualSize = yatzyTurn.Dice.Length;
             Assert.Equal(expectedSize, actualSize);
@@ -22,7 +24,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void DiceFaceValueInYatzyTurn_IsGreaterThan0()
         {
-            var yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             yatzyTurn.RollDice();
             foreach (var die in yatzyTurn.Dice)
             {
@@ -33,7 +35,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void DiceFaceValueInYatzyTurn_IsLessThan7()
         {
-            var yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             yatzyTurn.RollDice();
             foreach (var die in yatzyTurn.Dice)
             {
@@ -45,7 +47,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void ReRoll_ChangesFaceValueOfSelectedDice()
         {
-            YatzyTurn yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             yatzyTurn.RollDice();
             var initialDiceValues = yatzyTurn.GetDiceValues();
             var diceToReRoll = new[] {1, 3, 5};
@@ -54,19 +56,19 @@ namespace YatzyTests.Dice_Tests
             Assert.NotEqual(initialDiceValues, reRolledDiceValues);
         }
         
-        
         [Fact]
         public void ReRoll_DoesNotChangeNonSelectedDiceValues()
         {
             // Arrange
-            YatzyTurn yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
+            yatzyTurn.RollDice();
             var initialDiceValues = yatzyTurn.GetDiceValues();
             var diceToReRoll = new[] {4, 5};
             // Act
             yatzyTurn.ReRoll(diceToReRoll);
             var reRolledDiceValues = yatzyTurn.GetDiceValues();
             // Assert
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Assert.Equal(initialDiceValues[i], reRolledDiceValues[i]);
             }
@@ -77,7 +79,7 @@ namespace YatzyTests.Dice_Tests
         public void Rolls_ForANewYatzyTurn_Returns1()
         {
             // Arrange
-            YatzyTurn yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             yatzyTurn.RollDice();
             Assert.Equal(1, yatzyTurn.Rolls);
         }
@@ -86,7 +88,7 @@ namespace YatzyTests.Dice_Tests
         public void Rolls_After1ReRoll_Returns2()
         {
             // Arrange
-            YatzyTurn yatzyTurn = new YatzyTurn();
+            var yatzyTurn = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             yatzyTurn.RollDice();
             yatzyTurn.ReRoll(new[]{1});
             Assert.Equal(2, yatzyTurn.Rolls);
@@ -96,7 +98,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void MoreThan2ReRolls_ThrowsException()
         {
-            YatzyTurn bunch = new YatzyTurn();
+            var bunch = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             bunch.RollDice();
             bunch.ReRoll(new[]{1});
             bunch.ReRoll(new[]{1});
@@ -106,7 +108,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void CanBeRolled_AfterFirstRoll_ReturnsTrue()
         {
-            YatzyTurn bunch = new YatzyTurn();
+            var bunch = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             bunch.RollDice();
             Assert.True(bunch.CanBeRolled());
         }
@@ -114,7 +116,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void CanBeRolled_AfterFirstReRoll_ReturnsTrue()
         {
-            YatzyTurn bunch = new YatzyTurn();
+            var bunch = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             bunch.RollDice();
             bunch.ReRoll(new[]{1});
             Assert.True(bunch.CanBeRolled());
@@ -123,7 +125,7 @@ namespace YatzyTests.Dice_Tests
         [Fact]
         public void CanBeRolled_After2ReRolls_ReturnsFalse()
         {
-            YatzyTurn bunch = new YatzyTurn();
+            var bunch = new YatzyTurn(NumberOfDicePerRoll, MaximumRolls);
             bunch.RollDice();
             bunch.ReRoll(new[]{1});
             bunch.ReRoll(new[]{1});

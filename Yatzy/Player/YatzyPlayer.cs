@@ -7,10 +7,10 @@ namespace Yatzy.Player
         public string PlayerName { get; }
         public int Score { get; set; }
         
-        public IScoreCard ScoreCard { get; }
+        public ScoreCard ScoreCard { get; }
         public IInteractor ResponseHandler { get; }
 
-        public YatzyPlayer(string playerName, IScoreCard scoreCard, IInteractor responseGenerator)
+        public YatzyPlayer(string playerName, ScoreCard scoreCard, IInteractor responseGenerator)
         {
             PlayerName = playerName;
             ScoreCard = scoreCard;

@@ -9,11 +9,11 @@ namespace Yatzy.Control
     public class Game
     {
         public List<IPlayer> Players { get; }
-        public IYatzyTurn YatzyTurn { get; }
+        public YatzyTurn YatzyTurn { get; }
         
         private readonly CategoryScorerStrategy _categoryScorer;
         
-        public Game(List<IPlayer> players, IYatzyTurn yatzyTurn)
+        public Game(List<IPlayer> players, YatzyTurn yatzyTurn)
         {
             Players = players;
             YatzyTurn = yatzyTurn;
