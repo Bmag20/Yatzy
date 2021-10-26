@@ -3,18 +3,16 @@ using System.Linq;
 
 namespace Yatzy.CategoryStrategy.Utility
 {
-    public class NumberPool
+    public abstract class NumberPool : ICategoryStrategy
     {
-        private readonly int _faceValue;
+        protected int FaceValue;
 
-        public NumberPool(int faceValue)
+        public abstract void SetFaceValue();
+        
+        public int Score(int[] dice)
         {
-            _faceValue = faceValue;
+            return dice.Where(d => d == FaceValue).Sum();
         }
         
-        public int Score(IEnumerable<int> dice)
-        {
-            return dice.Where(d => d == _faceValue).Sum();
-        }
     }
 }

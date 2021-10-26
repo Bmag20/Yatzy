@@ -5,15 +5,19 @@ namespace Yatzy.InputOutput
 {
     public interface IOutputHandler
     {
-        public void Display(string text);
+        void Display(string text);
+        void DisplayWelcomeMessage();
         void PlayerTurn(IPlayer player);
-
         void PlayerScore(IPlayer player);
-        public void DisplayDice(int[] dice);
+        void DisplayDice(int[] dice);
         void DisplayCategoryScores(List<CategoryRecord> categoryRecords);
-        public void PrintNewLine();
-        void DisplayCategories(List<CategoryRecord> getPlayedCategories);
+        void PrintNewLine();
         void PlayerAbandoned(IPlayer player);
         void DisplayFinalScores(List<IPlayer> players);
+        void DisplayGameEnded();
+        void DisplayReRollPrompt();
+        void DisplayPlayedCategories(List<CategoryRecord> playedCategories);
+        void DisplayUnPlayedCategories(List<CategoryRecord> unPlayedCategories);
+        void DisplayWinners(List<IPlayer> winners);
     }
 }

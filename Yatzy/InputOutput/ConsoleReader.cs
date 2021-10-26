@@ -2,13 +2,13 @@ using System;
 
 namespace Yatzy.InputOutput
 {
-    public class YatzyReader : IInputHandler
+    public class ConsoleReader : IInputHandler
     {
-        public string GetPlayerInput()
+        public string GetStringInput()
         {
             return Console.ReadLine();
         }
-
+        
         public int GetNumericInput()
         {
             int result;

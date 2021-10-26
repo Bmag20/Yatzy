@@ -2,17 +2,15 @@ using Yatzy.CategoryStrategy.Utility;
 
 namespace Yatzy.CategoryStrategy
 {
-    public class FivesCategory : ICategoryStrategy
+    public class FivesCategory : NumberPool
     {
-        private const int FaceValue = 5;
-        private readonly NumberPool _numberPool;
         public FivesCategory()
         {
-            _numberPool = new NumberPool(FaceValue);
+            SetFaceValue();
         }
-        public int Score(int[] dice)
+        public sealed override void SetFaceValue()
         {
-            return _numberPool.Score(dice);
+            FaceValue = 5;
         }
     }
 }

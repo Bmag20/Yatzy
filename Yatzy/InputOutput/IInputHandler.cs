@@ -2,9 +2,8 @@ namespace Yatzy.InputOutput
 {
     public interface IInputHandler
     {
-        public string GetPlayerInput();
-
+        public string GetStringInput();
         public int GetNumericInput();
-        
+
     }
 }

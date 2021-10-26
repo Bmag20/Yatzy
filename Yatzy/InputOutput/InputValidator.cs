@@ -1,14 +1,14 @@
-namespace Yatzy.Control
+namespace Yatzy.InputOutput
 {
     public static class InputValidator
     {
         public static bool IsQuit(string playerInput)
         {
-            return playerInput.ToLower() == "q";
+            return playerInput is not null && playerInput.ToLower() == "q";
         }
         public static bool IsYes(string playerInput)
         {
-            return playerInput.ToLower() == "y";
+            return playerInput is not null && playerInput.ToLower() == "y";
         }
         public static bool IsLessThan(int playerInput, int upperBound)
         {

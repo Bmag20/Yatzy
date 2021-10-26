@@ -2,18 +2,16 @@ using Yatzy.CategoryStrategy.Utility;
 
 namespace Yatzy.CategoryStrategy
 {
-    public class OnesCategory : ICategoryStrategy
+    public class OnesCategory : NumberPool
     {
-        public const string Name = "ONES";
-        private const int FaceValue = 1;
-        private readonly NumberPool _numberPool;
         public OnesCategory()
         {
-            _numberPool = new NumberPool(FaceValue);
+            SetFaceValue();
         }
-        public int Score(int[] dice)
+        public sealed override void SetFaceValue()
         {
-            return _numberPool.Score(dice);
+            FaceValue = 1;
         }
     }
+
 }
